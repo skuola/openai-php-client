@@ -17,6 +17,31 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class CreateResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var string
+     */
+    public $object;
+    /**
+     * @readonly
+     * @var int
+     */
+    public $created;
+    /**
+     * @var array<int, CreateResponseChoice>
+     * @readonly
+     */
+    public $choices;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Edits\CreateResponseUsage
+     */
+    public $usage;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{id: string, object: string, created: int, model: string, choices: array<int, array{text: string, index: int, logprobs: int|null, finish_reason: string}>, usage: array{prompt_tokens: int, completion_tokens: int, total_tokens: int}}>
      */
     use ArrayAccessible;
@@ -27,13 +52,13 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
     /**
      * @param  array<int, CreateResponseChoice>  $choices
      */
-    private function __construct(
-        public readonly string $object,
-        public readonly int $created,
-        public readonly array $choices,
-        public readonly CreateResponseUsage $usage,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(string $object, int $created, array $choices, CreateResponseUsage $usage, MetaInformation $meta)
+    {
+        $this->object = $object;
+        $this->created = $created;
+        $this->choices = $choices;
+        $this->usage = $usage;
+        $this->meta = $meta;
     }
 
     /**
@@ -43,17 +68,13 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {
-        $choices = array_map(fn (array $result): CreateResponseChoice => CreateResponseChoice::from(
-            $result
-        ), $attributes['choices']);
+        $choices = array_map(function (array $result) : CreateResponseChoice {
+            return CreateResponseChoice::from(
+                $result
+            );
+        }, $attributes['choices']);
 
-        return new self(
-            $attributes['object'],
-            $attributes['created'],
-            $choices,
-            CreateResponseUsage::from($attributes['usage']),
-            $meta,
-        );
+        return new self($attributes['object'], $attributes['created'], $choices, CreateResponseUsage::from($attributes['usage']), $meta);
     }
 
     /**
@@ -64,10 +85,9 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
         return [
             'object' => $this->object,
             'created' => $this->created,
-            'choices' => array_map(
-                static fn (CreateResponseChoice $result): array => $result->toArray(),
-                $this->choices,
-            ),
+            'choices' => array_map(static function (CreateResponseChoice $result) : array {
+                return $result->toArray();
+            }, $this->choices),
             'usage' => $this->usage->toArray(),
         ];
     }

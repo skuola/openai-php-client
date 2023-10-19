@@ -13,16 +13,36 @@ use OpenAI\Responses\Concerns\ArrayAccessible;
 final class RetrieveResponseHyperparams implements ResponseContract
 {
     /**
+     * @readonly
+     * @var int|null
+     */
+    public $batchSize;
+    /**
+     * @readonly
+     * @var float|null
+     */
+    public $learningRateMultiplier;
+    /**
+     * @readonly
+     * @var int
+     */
+    public $nEpochs;
+    /**
+     * @readonly
+     * @var float
+     */
+    public $promptLossWeight;
+    /**
      * @use ArrayAccessible<array{batch_size: ?int, learning_rate_multiplier: ?float, n_epochs: int, prompt_loss_weight: float}>
      */
     use ArrayAccessible;
 
-    private function __construct(
-        public readonly ?int $batchSize,
-        public readonly ?float $learningRateMultiplier,
-        public readonly int $nEpochs,
-        public readonly float $promptLossWeight,
-    ) {
+    private function __construct(?int $batchSize, ?float $learningRateMultiplier, int $nEpochs, float $promptLossWeight)
+    {
+        $this->batchSize = $batchSize;
+        $this->learningRateMultiplier = $learningRateMultiplier;
+        $this->nEpochs = $nEpochs;
+        $this->promptLossWeight = $promptLossWeight;
     }
 
     /**
@@ -32,12 +52,7 @@ final class RetrieveResponseHyperparams implements ResponseContract
      */
     public static function from(array $attributes): self
     {
-        return new self(
-            $attributes['batch_size'],
-            $attributes['learning_rate_multiplier'],
-            $attributes['n_epochs'],
-            $attributes['prompt_loss_weight'],
-        );
+        return new self($attributes['batch_size'], $attributes['learning_rate_multiplier'], $attributes['n_epochs'], $attributes['prompt_loss_weight']);
     }
 
     /**

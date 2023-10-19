@@ -19,19 +19,38 @@ use Psr\Http\Message\StreamInterface;
 final class Payload
 {
     /**
+     * @readonly
+     * @var \OpenAI\Enums\Transporter\ContentType
+     */
+    private $contentType;
+    /**
+     * @readonly
+     * @var \OpenAI\Enums\Transporter\Method
+     */
+    private $method;
+    /**
+     * @readonly
+     * @var \OpenAI\ValueObjects\ResourceUri
+     */
+    private $uri;
+    /**
+     * @var array<string, mixed>
+     * @readonly
+     */
+    private $parameters = [];
+    /**
      * Creates a new Request value object.
      *
      * @param  array<string, mixed>  $parameters
      */
-    private function __construct(
-        private readonly ContentType $contentType,
-        private readonly Method $method,
-        private readonly ResourceUri $uri,
-        private readonly array $parameters = [],
-    ) {
+    private function __construct(ContentType $contentType, Method $method, ResourceUri $uri, array $parameters = [])
+    {
+        $this->contentType = $contentType;
+        $this->method = $method;
+        $this->uri = $uri;
+        $this->parameters = $parameters;
         // ..
     }
-
     /**
      * Creates a new Payload value object from the given parameters.
      *
@@ -137,7 +156,7 @@ final class Payload
 
         $queryParams = $queryParams->toArray();
         if ($this->method === Method::GET) {
-            $queryParams = [...$queryParams, ...$this->parameters];
+            $queryParams = array_merge($queryParams, $this->parameters);
         }
 
         if ($queryParams !== []) {
@@ -165,7 +184,7 @@ final class Payload
 
                 $headers = $headers->withContentType($this->contentType, '; boundary='.$streamBuilder->getBoundary());
             } else {
-                $body = $psr17Factory->createStream(json_encode($this->parameters, JSON_THROW_ON_ERROR));
+                $body = $psr17Factory->createStream(json_encode($this->parameters, 0));
             }
         }
 

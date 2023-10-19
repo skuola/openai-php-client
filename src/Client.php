@@ -21,10 +21,16 @@ use OpenAI\Resources\Moderations;
 final class Client implements ClientContract
 {
     /**
+     * @readonly
+     * @var \OpenAI\Contracts\TransporterContract
+     */
+    private $transporter;
+    /**
      * Creates a Client instance with the given API token.
      */
-    public function __construct(private readonly TransporterContract $transporter)
+    public function __construct(TransporterContract $transporter)
     {
+        $this->transporter = $transporter;
         // ..
     }
 
@@ -34,7 +40,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/completions
      */
-    public function completions(): Completions
+    public function completions(): \OpenAI\Contracts\Resources\CompletionsContract
     {
         return new Completions($this->transporter);
     }
@@ -44,7 +50,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/chat
      */
-    public function chat(): Chat
+    public function chat(): \OpenAI\Contracts\Resources\ChatContract
     {
         return new Chat($this->transporter);
     }
@@ -54,7 +60,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/embeddings
      */
-    public function embeddings(): Embeddings
+    public function embeddings(): \OpenAI\Contracts\Resources\EmbeddingsContract
     {
         return new Embeddings($this->transporter);
     }
@@ -64,7 +70,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/audio
      */
-    public function audio(): Audio
+    public function audio(): \OpenAI\Contracts\Resources\AudioContract
     {
         return new Audio($this->transporter);
     }
@@ -74,7 +80,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/edits
      */
-    public function edits(): Edits
+    public function edits(): \OpenAI\Contracts\Resources\EditsContract
     {
         return new Edits($this->transporter);
     }
@@ -84,7 +90,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/files
      */
-    public function files(): Files
+    public function files(): \OpenAI\Contracts\Resources\FilesContract
     {
         return new Files($this->transporter);
     }
@@ -94,7 +100,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/models
      */
-    public function models(): Models
+    public function models(): \OpenAI\Contracts\Resources\ModelsContract
     {
         return new Models($this->transporter);
     }
@@ -104,7 +110,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/fine-tuning
      */
-    public function fineTuning(): FineTuning
+    public function fineTuning(): \OpenAI\Contracts\Resources\FineTuningContract
     {
         return new FineTuning($this->transporter);
     }
@@ -116,7 +122,7 @@ final class Client implements ClientContract
      * @deprecated OpenAI has deprecated this endpoint and will stop working by January 4, 2024.
      * https://openai.com/blog/gpt-3-5-turbo-fine-tuning-and-api-updates#updated-gpt-3-models
      */
-    public function fineTunes(): FineTunes
+    public function fineTunes(): \OpenAI\Contracts\Resources\FineTunesContract
     {
         return new FineTunes($this->transporter);
     }
@@ -126,7 +132,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/moderations
      */
-    public function moderations(): Moderations
+    public function moderations(): \OpenAI\Contracts\Resources\ModerationsContract
     {
         return new Moderations($this->transporter);
     }
@@ -136,7 +142,7 @@ final class Client implements ClientContract
      *
      * @see https://platform.openai.com/docs/api-reference/images
      */
-    public function images(): Images
+    public function images(): \OpenAI\Contracts\Resources\ImagesContract
     {
         return new Images($this->transporter);
     }

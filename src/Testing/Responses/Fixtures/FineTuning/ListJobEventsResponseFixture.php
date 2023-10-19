@@ -10,7 +10,7 @@ final class ListJobEventsResponseFixture
             [
                 'object' => 'fine_tuning.job.event',
                 'id' => 'ft-event-ddTJfwuMVpfLXseO0Am0Gqjm',
-                'created_at' => 1_692_407_401,
+                'created_at' => 1692407401,
                 'level' => 'info',
                 'message' => 'Fine tuning job successfully completed',
                 'data' => null,

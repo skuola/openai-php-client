@@ -14,25 +14,37 @@ use OpenAI\Responses\Meta\MetaInformation;
 final class Response
 {
     /**
+     * @var TData
+     * @readonly
+     */
+    private $data;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * Creates a new Response value object.
      *
-     * @param  TData  $data
+     * @param mixed[]|string $data
      */
     private function __construct(
-        private readonly array|string $data,
-        private readonly MetaInformation $meta
+        $data,
+        MetaInformation $meta
     ) {
+        $this->data = $data;
+        $this->meta = $meta;
         // ..
     }
 
     /**
      * Creates a new Response value object from the given data and meta information.
      *
-     * @param  TData  $data
+     * @param mixed[]|string $data
      * @param  array<string, array<int, string>>  $headers
      * @return Response<TData>
      */
-    public static function from(array|string $data, array $headers): self
+    public static function from($data, array $headers): self
     {
         // @phpstan-ignore-next-line
         $meta = MetaInformation::from($headers);
@@ -45,7 +57,7 @@ final class Response
      *
      * @return TData
      */
-    public function data(): array|string
+    public function data()
     {
         return $this->data;
     }

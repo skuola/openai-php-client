@@ -17,6 +17,26 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class CreateResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var string
+     */
+    public $object;
+    /**
+     * @var array<int, CreateResponseEmbedding>
+     * @readonly
+     */
+    public $embeddings;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Embeddings\CreateResponseUsage
+     */
+    public $usage;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{object: string, data: array<int, array{object: string, embedding: array<int, float>, index: int}>, usage: array{prompt_tokens: int, total_tokens: int}}>
      */
     use ArrayAccessible;
@@ -27,12 +47,12 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
     /**
      * @param  array<int, CreateResponseEmbedding>  $embeddings
      */
-    private function __construct(
-        public readonly string $object,
-        public readonly array $embeddings,
-        public readonly CreateResponseUsage $usage,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(string $object, array $embeddings, CreateResponseUsage $usage, MetaInformation $meta)
+    {
+        $this->object = $object;
+        $this->embeddings = $embeddings;
+        $this->usage = $usage;
+        $this->meta = $meta;
     }
 
     /**
@@ -42,16 +62,13 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {
-        $embeddings = array_map(fn (array $result): CreateResponseEmbedding => CreateResponseEmbedding::from(
-            $result
-        ), $attributes['data']);
+        $embeddings = array_map(function (array $result) : CreateResponseEmbedding {
+            return CreateResponseEmbedding::from(
+                $result
+            );
+        }, $attributes['data']);
 
-        return new self(
-            $attributes['object'],
-            $embeddings,
-            CreateResponseUsage::from($attributes['usage']),
-            $meta,
-        );
+        return new self($attributes['object'], $embeddings, CreateResponseUsage::from($attributes['usage']), $meta);
     }
 
     /**
@@ -61,10 +78,9 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
     {
         return [
             'object' => $this->object,
-            'data' => array_map(
-                static fn (CreateResponseEmbedding $result): array => $result->toArray(),
-                $this->embeddings,
-            ),
+            'data' => array_map(static function (CreateResponseEmbedding $result) : array {
+                return $result->toArray();
+            }, $this->embeddings),
             'usage' => $this->usage->toArray(),
         ];
     }

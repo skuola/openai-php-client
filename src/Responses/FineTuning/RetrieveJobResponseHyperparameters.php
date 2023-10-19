@@ -13,13 +13,21 @@ use OpenAI\Responses\Concerns\ArrayAccessible;
 final class RetrieveJobResponseHyperparameters implements ResponseContract
 {
     /**
+     * @readonly
+     * @var int|string
+     */
+    public $nEpochs;
+    /**
      * @use ArrayAccessible<array{n_epochs: int|string}>
      */
     use ArrayAccessible;
 
-    private function __construct(
-        public readonly int|string $nEpochs,
-    ) {
+    /**
+     * @param int|string $nEpochs
+     */
+    private function __construct($nEpochs)
+    {
+        $this->nEpochs = $nEpochs;
     }
 
     /**
@@ -29,9 +37,7 @@ final class RetrieveJobResponseHyperparameters implements ResponseContract
      */
     public static function from(array $attributes): self
     {
-        return new self(
-            $attributes['n_epochs'],
-        );
+        return new self($attributes['n_epochs']);
     }
 
     /**

@@ -7,7 +7,7 @@ final class CreateResponseFixture
     public const ATTRIBUTES = [
         'id' => 'cmpl-uqkvlQyYK7bGYrRHQ0eXlWi7',
         'object' => 'text_completion',
-        'created' => 1_589_478_378,
+        'created' => 1589478378,
         'model' => 'gpt-3.5-turbo-instruct',
         'choices' => [
             [

@@ -9,7 +9,7 @@ final class ListEventsResponseFixture
         'data' => [
             [
                 'object' => 'fine-tune-event',
-                'created_at' => 1_614_807_352,
+                'created_at' => 1614807352,
                 'level' => 'info',
                 'message' => 'Job enqueued. Waiting for jobs ahead to complete. Queue number =>  0.',
             ],

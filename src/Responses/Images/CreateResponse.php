@@ -17,6 +17,21 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class CreateResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var int
+     */
+    public $created;
+    /**
+     * @var array<int, CreateResponseData>
+     * @readonly
+     */
+    public $data;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{created: int, data: array<int, array{url?: string, b64_json?: string}>}>
      */
     use ArrayAccessible;
@@ -27,11 +42,11 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
     /**
      * @param  array<int, CreateResponseData>  $data
      */
-    private function __construct(
-        public readonly int $created,
-        public readonly array $data,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(int $created, array $data, MetaInformation $meta)
+    {
+        $this->created = $created;
+        $this->data = $data;
+        $this->meta = $meta;
     }
 
     /**
@@ -41,15 +56,13 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {
-        $results = array_map(fn (array $result): CreateResponseData => CreateResponseData::from(
-            $result
-        ), $attributes['data']);
+        $results = array_map(function (array $result) : CreateResponseData {
+            return CreateResponseData::from(
+                $result
+            );
+        }, $attributes['data']);
 
-        return new self(
-            $attributes['created'],
-            $results,
-            $meta,
-        );
+        return new self($attributes['created'], $results, $meta);
     }
 
     /**
@@ -59,10 +72,9 @@ final class CreateResponse implements ResponseContract, ResponseHasMetaInformati
     {
         return [
             'created' => $this->created,
-            'data' => array_map(
-                static fn (CreateResponseData $result): array => $result->toArray(),
-                $this->data,
-            ),
+            'data' => array_map(static function (CreateResponseData $result) : array {
+                return $result->toArray();
+            }, $this->data),
         ];
     }
 }

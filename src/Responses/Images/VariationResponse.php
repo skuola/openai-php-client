@@ -17,6 +17,21 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class VariationResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var int
+     */
+    public $created;
+    /**
+     * @var array<int, VariationResponseData>
+     * @readonly
+     */
+    public $data;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{created: int, data: array<int, array{url?: string, b64_json?: string}>}>
      */
     use ArrayAccessible;
@@ -27,11 +42,11 @@ final class VariationResponse implements ResponseContract, ResponseHasMetaInform
     /**
      * @param  array<int, VariationResponseData>  $data
      */
-    private function __construct(
-        public readonly int $created,
-        public readonly array $data,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(int $created, array $data, MetaInformation $meta)
+    {
+        $this->created = $created;
+        $this->data = $data;
+        $this->meta = $meta;
     }
 
     /**
@@ -41,15 +56,13 @@ final class VariationResponse implements ResponseContract, ResponseHasMetaInform
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {
-        $results = array_map(fn (array $result): VariationResponseData => VariationResponseData::from(
-            $result
-        ), $attributes['data']);
+        $results = array_map(function (array $result) : VariationResponseData {
+            return VariationResponseData::from(
+                $result
+            );
+        }, $attributes['data']);
 
-        return new self(
-            $attributes['created'],
-            $results,
-            $meta,
-        );
+        return new self($attributes['created'], $results, $meta);
     }
 
     /**
@@ -59,10 +72,9 @@ final class VariationResponse implements ResponseContract, ResponseHasMetaInform
     {
         return [
             'created' => $this->created,
-            'data' => array_map(
-                static fn (VariationResponseData $result): array => $result->toArray(),
-                $this->data,
-            ),
+            'data' => array_map(static function (VariationResponseData $result) : array {
+                return $result->toArray();
+            }, $this->data),
         ];
     }
 }

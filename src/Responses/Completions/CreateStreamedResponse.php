@@ -14,6 +14,31 @@ use OpenAI\Testing\Responses\Concerns\FakeableForStreamedResponse;
 final class CreateStreamedResponse implements ResponseContract
 {
     /**
+     * @readonly
+     * @var string
+     */
+    public $id;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $object;
+    /**
+     * @readonly
+     * @var int
+     */
+    public $created;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $model;
+    /**
+     * @var array<int, CreateResponseChoice>
+     * @readonly
+     */
+    public $choices;
+    /**
      * @use ArrayAccessible<array{id: string, object: string, created: int, model: string, choices: array<int, array{text: string, index: int, logprobs: array{tokens: array<int, string>, token_logprobs: array<int, float>, top_logprobs: array<int, string>|null, text_offset: array<int, int>}|null, finish_reason: string|null}>}>
      */
     use ArrayAccessible;
@@ -23,13 +48,13 @@ final class CreateStreamedResponse implements ResponseContract
     /**
      * @param  array<int, CreateResponseChoice>  $choices
      */
-    private function __construct(
-        public readonly string $id,
-        public readonly string $object,
-        public readonly int $created,
-        public readonly string $model,
-        public readonly array $choices,
-    ) {
+    private function __construct(string $id, string $object, int $created, string $model, array $choices)
+    {
+        $this->id = $id;
+        $this->object = $object;
+        $this->created = $created;
+        $this->model = $model;
+        $this->choices = $choices;
     }
 
     /**
@@ -39,17 +64,13 @@ final class CreateStreamedResponse implements ResponseContract
      */
     public static function from(array $attributes): self
     {
-        $choices = array_map(fn (array $result): CreateResponseChoice => CreateResponseChoice::from(
-            $result
-        ), $attributes['choices']);
+        $choices = array_map(function (array $result) : CreateResponseChoice {
+            return CreateResponseChoice::from(
+                $result
+            );
+        }, $attributes['choices']);
 
-        return new self(
-            $attributes['id'],
-            $attributes['object'],
-            $attributes['created'],
-            $attributes['model'],
-            $choices,
-        );
+        return new self($attributes['id'], $attributes['object'], $attributes['created'], $attributes['model'], $choices);
     }
 
     /**
@@ -62,10 +83,9 @@ final class CreateStreamedResponse implements ResponseContract
             'object' => $this->object,
             'created' => $this->created,
             'model' => $this->model,
-            'choices' => array_map(
-                static fn (CreateResponseChoice $result): array => $result->toArray(),
-                $this->choices,
-            ),
+            'choices' => array_map(static function (CreateResponseChoice $result) : array {
+                return $result->toArray();
+            }, $this->choices),
         ];
     }
 }

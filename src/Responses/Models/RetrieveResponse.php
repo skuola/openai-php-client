@@ -17,6 +17,46 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class RetrieveResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var string
+     */
+    public $id;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $object;
+    /**
+     * @readonly
+     * @var int
+     */
+    public $created;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $ownedBy;
+    /**
+     * @var array<int, RetrieveResponsePermission>
+     * @readonly
+     */
+    public $permission;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $root;
+    /**
+     * @readonly
+     * @var string|null
+     */
+    public $parent;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{id: string, object: string, created: int, owned_by: string, permission: array<int, array{id: string, object: string, created: int, allow_create_engine: bool, allow_sampling: bool, allow_logprobs: bool, allow_search_indices: bool, allow_view: bool, allow_fine_tuning: bool, organization: string, group: ?string, is_blocking: bool}>, root: string, parent: ?string}>
      */
     use ArrayAccessible;
@@ -27,16 +67,16 @@ final class RetrieveResponse implements ResponseContract, ResponseHasMetaInforma
     /**
      * @param  array<int, RetrieveResponsePermission>  $permission
      */
-    private function __construct(
-        public readonly string $id,
-        public readonly string $object,
-        public readonly int $created,
-        public readonly string $ownedBy,
-        public readonly array $permission,
-        public readonly string $root,
-        public readonly ?string $parent,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(string $id, string $object, int $created, string $ownedBy, array $permission, string $root, ?string $parent, MetaInformation $meta)
+    {
+        $this->id = $id;
+        $this->object = $object;
+        $this->created = $created;
+        $this->ownedBy = $ownedBy;
+        $this->permission = $permission;
+        $this->root = $root;
+        $this->parent = $parent;
+        $this->meta = $meta;
     }
 
     /**
@@ -46,20 +86,13 @@ final class RetrieveResponse implements ResponseContract, ResponseHasMetaInforma
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {
-        $permission = array_map(fn (array $result): RetrieveResponsePermission => RetrieveResponsePermission::from(
-            $result
-        ), $attributes['permission']);
+        $permission = array_map(function (array $result) : RetrieveResponsePermission {
+            return RetrieveResponsePermission::from(
+                $result
+            );
+        }, $attributes['permission']);
 
-        return new self(
-            $attributes['id'],
-            $attributes['object'],
-            $attributes['created'],
-            $attributes['owned_by'],
-            $permission,
-            $attributes['root'],
-            $attributes['parent'],
-            $meta,
-        );
+        return new self($attributes['id'], $attributes['object'], $attributes['created'], $attributes['owned_by'], $permission, $attributes['root'], $attributes['parent'], $meta);
     }
 
     /**
@@ -72,10 +105,9 @@ final class RetrieveResponse implements ResponseContract, ResponseHasMetaInforma
             'object' => $this->object,
             'created' => $this->created,
             'owned_by' => $this->ownedBy,
-            'permission' => array_map(
-                static fn (RetrieveResponsePermission $result): array => $result->toArray(),
-                $this->permission,
-            ),
+            'permission' => array_map(static function (RetrieveResponsePermission $result) : array {
+                return $result->toArray();
+            }, $this->permission),
             'root' => $this->root,
             'parent' => $this->parent,
         ];

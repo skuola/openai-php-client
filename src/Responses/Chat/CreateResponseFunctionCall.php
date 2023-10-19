@@ -6,21 +6,27 @@ namespace OpenAI\Responses\Chat;
 
 final class CreateResponseFunctionCall
 {
-    private function __construct(
-        public readonly string $name,
-        public readonly string $arguments,
-    ) {
+    /**
+     * @readonly
+     * @var string
+     */
+    public $name;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $arguments;
+    private function __construct(string $name, string $arguments)
+    {
+        $this->name = $name;
+        $this->arguments = $arguments;
     }
-
     /**
      * @param  array{name: string, arguments: string}  $attributes
      */
     public static function from(array $attributes): self
     {
-        return new self(
-            $attributes['name'],
-            $attributes['arguments'],
-        );
+        return new self($attributes['name'], $attributes['arguments']);
     }
 
     /**

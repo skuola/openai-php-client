@@ -7,13 +7,13 @@ final class RetrieveResponseFixture
     public const ATTRIBUTES = [
         'id' => 'text-babbage:001',
         'object' => 'model',
-        'created' => 1_642_018_370,
+        'created' => 1642018370,
         'owned_by' => 'openai',
         'permission' => [
             [
                 'id' => 'snapperm-7oP3WFr9x7qf5xb3eZrVABAH',
                 'object' => 'model_permission',
-                'created' => 1_642_018_480,
+                'created' => 1642018480,
                 'allow_create_engine' => false,
                 'allow_sampling' => true,
                 'allow_logprobs' => true,

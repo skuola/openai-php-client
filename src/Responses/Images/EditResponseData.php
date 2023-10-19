@@ -13,14 +13,24 @@ use OpenAI\Responses\Concerns\ArrayAccessible;
 final class EditResponseData implements ResponseContract
 {
     /**
+     * @readonly
+     * @var string
+     */
+    public $url = '';
+    /**
+     * @readonly
+     * @var string
+     */
+    public $b64_json = '';
+    /**
      * @use ArrayAccessible<array{url: string}|array{b64_json: string}>
      */
     use ArrayAccessible;
 
-    private function __construct(
-        public readonly string $url = '',
-        public readonly string $b64_json = '',
-    ) {
+    private function __construct(string $url = '', string $b64_json = '')
+    {
+        $this->url = $url;
+        $this->b64_json = $b64_json;
     }
 
     /**
@@ -30,10 +40,7 @@ final class EditResponseData implements ResponseContract
      */
     public static function from(array $attributes): self
     {
-        return new self(
-            $attributes['url'] ?? '',
-            $attributes['b64_json'] ?? '',
-        );
+        return new self($attributes['url'] ?? '', $attributes['b64_json'] ?? '');
     }
 
     /**

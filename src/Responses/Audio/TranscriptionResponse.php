@@ -17,6 +17,36 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class TranscriptionResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var string|null
+     */
+    public $task;
+    /**
+     * @readonly
+     * @var string|null
+     */
+    public $language;
+    /**
+     * @readonly
+     * @var float|null
+     */
+    public $duration;
+    /**
+     * @var array<int, TranscriptionResponseSegment>
+     * @readonly
+     */
+    public $segments;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $text;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{task: ?string, language: ?string, duration: ?float, segments: array<int, array{id: int, seek: int, start: float, end: float, text: string, tokens: array<int, int>, temperature: float, avg_logprob: float, compression_ratio: float, no_speech_prob: float, transient: bool}>, text: string}>
      */
     use ArrayAccessible;
@@ -27,14 +57,14 @@ final class TranscriptionResponse implements ResponseContract, ResponseHasMetaIn
     /**
      * @param  array<int, TranscriptionResponseSegment>  $segments
      */
-    private function __construct(
-        public readonly ?string $task,
-        public readonly ?string $language,
-        public readonly ?float $duration,
-        public readonly array $segments,
-        public readonly string $text,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(?string $task, ?string $language, ?float $duration, array $segments, string $text, MetaInformation $meta)
+    {
+        $this->task = $task;
+        $this->language = $language;
+        $this->duration = $duration;
+        $this->segments = $segments;
+        $this->text = $text;
+        $this->meta = $meta;
     }
 
     /**
@@ -42,24 +72,19 @@ final class TranscriptionResponse implements ResponseContract, ResponseHasMetaIn
      *
      * @param  array{task: ?string, language: ?string, duration: ?float, segments: array<int, array{id: int, seek: int, start: float, end: float, text: string, tokens: array<int, int>, temperature: float, avg_logprob: float, compression_ratio: float, no_speech_prob: float, transient: bool}>, text: string}|string  $attributes
      */
-    public static function from(array|string $attributes, MetaInformation $meta): self
+    public static function from($attributes, MetaInformation $meta): self
     {
         if (is_string($attributes)) {
             $attributes = ['text' => $attributes];
         }
 
-        $segments = isset($attributes['segments']) ? array_map(fn (array $result): TranscriptionResponseSegment => TranscriptionResponseSegment::from(
-            $result
-        ), $attributes['segments']) : [];
+        $segments = isset($attributes['segments']) ? array_map(function (array $result) : TranscriptionResponseSegment {
+            return TranscriptionResponseSegment::from(
+                $result
+            );
+        }, $attributes['segments']) : [];
 
-        return new self(
-            $attributes['task'] ?? null,
-            $attributes['language'] ?? null,
-            $attributes['duration'] ?? null,
-            $segments,
-            $attributes['text'],
-            $meta,
-        );
+        return new self($attributes['task'] ?? null, $attributes['language'] ?? null, $attributes['duration'] ?? null, $segments, $attributes['text'], $meta);
     }
 
     /**
@@ -71,10 +96,9 @@ final class TranscriptionResponse implements ResponseContract, ResponseHasMetaIn
             'task' => $this->task,
             'language' => $this->language,
             'duration' => $this->duration,
-            'segments' => array_map(
-                static fn (TranscriptionResponseSegment $result): array => $result->toArray(),
-                $this->segments,
-            ),
+            'segments' => array_map(static function (TranscriptionResponseSegment $result) : array {
+                return $result->toArray();
+            }, $this->segments),
             'text' => $this->text,
         ];
     }

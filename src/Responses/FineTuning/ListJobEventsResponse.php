@@ -17,6 +17,26 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class ListJobEventsResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var string
+     */
+    public $object;
+    /**
+     * @var array<int, ListJobEventsResponseEvent>
+     * @readonly
+     */
+    public $data;
+    /**
+     * @readonly
+     * @var bool
+     */
+    public $hasMore;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{object: string, data: array<int, array{object: string, id: string, created_at: int, level: string, message: string, data: array{step: int, train_loss: float, train_mean_token_accuracy: float}|null, type: string}>, has_more: bool}>
      */
     use ArrayAccessible;
@@ -27,12 +47,12 @@ final class ListJobEventsResponse implements ResponseContract, ResponseHasMetaIn
     /**
      * @param  array<int, ListJobEventsResponseEvent>  $data
      */
-    private function __construct(
-        public readonly string $object,
-        public readonly array $data,
-        public readonly bool $hasMore,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(string $object, array $data, bool $hasMore, MetaInformation $meta)
+    {
+        $this->object = $object;
+        $this->data = $data;
+        $this->hasMore = $hasMore;
+        $this->meta = $meta;
     }
 
     /**
@@ -42,16 +62,13 @@ final class ListJobEventsResponse implements ResponseContract, ResponseHasMetaIn
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {
-        $data = array_map(fn (array $result): ListJobEventsResponseEvent => ListJobEventsResponseEvent::from(
-            $result
-        ), $attributes['data']);
+        $data = array_map(function (array $result) : ListJobEventsResponseEvent {
+            return ListJobEventsResponseEvent::from(
+                $result
+            );
+        }, $attributes['data']);
 
-        return new self(
-            $attributes['object'],
-            $data,
-            $attributes['has_more'],
-            $meta,
-        );
+        return new self($attributes['object'], $data, $attributes['has_more'], $meta);
     }
 
     /**
@@ -61,10 +78,9 @@ final class ListJobEventsResponse implements ResponseContract, ResponseHasMetaIn
     {
         return [
             'object' => $this->object,
-            'data' => array_map(
-                static fn (ListJobEventsResponseEvent $response): array => $response->toArray(),
-                $this->data,
-            ),
+            'data' => array_map(static function (ListJobEventsResponseEvent $response) : array {
+                return $response->toArray();
+            }, $this->data),
             'has_more' => $this->hasMore,
         ];
     }

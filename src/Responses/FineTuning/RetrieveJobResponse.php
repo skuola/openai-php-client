@@ -17,6 +17,76 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class RetrieveJobResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var string
+     */
+    public $id;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $object;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $model;
+    /**
+     * @readonly
+     * @var int
+     */
+    public $createdAt;
+    /**
+     * @readonly
+     * @var int|null
+     */
+    public $finishedAt;
+    /**
+     * @readonly
+     * @var string|null
+     */
+    public $fineTunedModel;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\FineTuning\RetrieveJobResponseHyperparameters
+     */
+    public $hyperparameters;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $organizationId;
+    /**
+     * @var array<int, string>
+     * @readonly
+     */
+    public $resultFiles;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $status;
+    /**
+     * @readonly
+     * @var string|null
+     */
+    public $validationFile;
+    /**
+     * @readonly
+     * @var string
+     */
+    public $trainingFile;
+    /**
+     * @readonly
+     * @var int|null
+     */
+    public $trainedTokens;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{id: string, object: string, model: string, created_at: int, finished_at: ?int, fine_tuned_model: ?string, hyperparameters: array{n_epochs: int|string}, organization_id: string, result_files: array<int, string>, status: string, validation_file: ?string, training_file: string, trained_tokens: ?int}>
      */
     use ArrayAccessible;
@@ -27,22 +97,22 @@ final class RetrieveJobResponse implements ResponseContract, ResponseHasMetaInfo
     /**
      * @param  array<int, string>  $resultFiles
      */
-    private function __construct(
-        public readonly string $id,
-        public readonly string $object,
-        public readonly string $model,
-        public readonly int $createdAt,
-        public readonly ?int $finishedAt,
-        public readonly ?string $fineTunedModel,
-        public readonly RetrieveJobResponseHyperparameters $hyperparameters,
-        public readonly string $organizationId,
-        public readonly array $resultFiles,
-        public readonly string $status,
-        public readonly ?string $validationFile,
-        public readonly string $trainingFile,
-        public readonly ?int $trainedTokens,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(string $id, string $object, string $model, int $createdAt, ?int $finishedAt, ?string $fineTunedModel, RetrieveJobResponseHyperparameters $hyperparameters, string $organizationId, array $resultFiles, string $status, ?string $validationFile, string $trainingFile, ?int $trainedTokens, MetaInformation $meta)
+    {
+        $this->id = $id;
+        $this->object = $object;
+        $this->model = $model;
+        $this->createdAt = $createdAt;
+        $this->finishedAt = $finishedAt;
+        $this->fineTunedModel = $fineTunedModel;
+        $this->hyperparameters = $hyperparameters;
+        $this->organizationId = $organizationId;
+        $this->resultFiles = $resultFiles;
+        $this->status = $status;
+        $this->validationFile = $validationFile;
+        $this->trainingFile = $trainingFile;
+        $this->trainedTokens = $trainedTokens;
+        $this->meta = $meta;
     }
 
     /**
@@ -52,22 +122,7 @@ final class RetrieveJobResponse implements ResponseContract, ResponseHasMetaInfo
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {
-        return new self(
-            $attributes['id'],
-            $attributes['object'],
-            $attributes['model'],
-            $attributes['created_at'],
-            $attributes['finished_at'],
-            $attributes['fine_tuned_model'],
-            RetrieveJobResponseHyperparameters::from($attributes['hyperparameters']),
-            $attributes['organization_id'],
-            $attributes['result_files'],
-            $attributes['status'],
-            $attributes['validation_file'],
-            $attributes['training_file'],
-            $attributes['trained_tokens'],
-            $meta,
-        );
+        return new self($attributes['id'], $attributes['object'], $attributes['model'], $attributes['created_at'], $attributes['finished_at'], $attributes['fine_tuned_model'], RetrieveJobResponseHyperparameters::from($attributes['hyperparameters']), $attributes['organization_id'], $attributes['result_files'], $attributes['status'], $attributes['validation_file'], $attributes['training_file'], $attributes['trained_tokens'], $meta);
     }
 
     /**

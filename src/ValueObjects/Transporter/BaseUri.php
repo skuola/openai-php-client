@@ -12,10 +12,16 @@ use OpenAI\Contracts\StringableContract;
 final class BaseUri implements StringableContract
 {
     /**
+     * @readonly
+     * @var string
+     */
+    private $baseUri;
+    /**
      * Creates a new Base URI value object.
      */
-    private function __construct(private readonly string $baseUri)
+    private function __construct(string $baseUri)
     {
+        $this->baseUri = $baseUri;
         // ..
     }
 
@@ -33,7 +39,7 @@ final class BaseUri implements StringableContract
     public function toString(): string
     {
         foreach (['http://', 'https://'] as $protocol) {
-            if (str_starts_with($this->baseUri, $protocol)) {
+            if (strncmp($this->baseUri, $protocol, strlen($protocol)) === 0) {
                 return "{$this->baseUri}/";
             }
         }

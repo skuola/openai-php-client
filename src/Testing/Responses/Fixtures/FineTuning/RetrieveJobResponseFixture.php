@@ -8,8 +8,8 @@ final class RetrieveJobResponseFixture
         'id' => 'ft-AF1WoRqd3aJAHsqc9NY7iL8F',
         'object' => 'fine_tuning.job',
         'model' => 'gpt-3.5-turbo-0613',
-        'created_at' => 1_614_807_352,
-        'finished_at' => 1_692_819_450,
+        'created_at' => 1614807352,
+        'finished_at' => 1692819450,
         'fine_tuned_model' => 'ft:gpt-3.5-turbo-0613:gehri-dev::7qnxQ0sQ',
         'hyperparameters' => [
             'n_epochs' => 9,

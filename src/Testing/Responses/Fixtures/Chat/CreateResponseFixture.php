@@ -7,7 +7,7 @@ final class CreateResponseFixture
     public const ATTRIBUTES = [
         'id' => 'chatcmpl-123',
         'object' => 'chat.completion',
-        'created' => 1_677_652_288,
+        'created' => 1677652288,
         'model' => 'gpt-3.5-turbo',
         'choices' => [
             [

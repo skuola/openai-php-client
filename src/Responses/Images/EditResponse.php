@@ -17,6 +17,21 @@ use OpenAI\Testing\Responses\Concerns\Fakeable;
 final class EditResponse implements ResponseContract, ResponseHasMetaInformationContract
 {
     /**
+     * @readonly
+     * @var int
+     */
+    public $created;
+    /**
+     * @var array<int, EditResponseData>
+     * @readonly
+     */
+    public $data;
+    /**
+     * @readonly
+     * @var \OpenAI\Responses\Meta\MetaInformation
+     */
+    private $meta;
+    /**
      * @use ArrayAccessible<array{created: int, data: array<int, array{url?: string, b64_json?: string}>}>
      */
     use ArrayAccessible;
@@ -27,11 +42,11 @@ final class EditResponse implements ResponseContract, ResponseHasMetaInformation
     /**
      * @param  array<int, EditResponseData>  $data
      */
-    private function __construct(
-        public readonly int $created,
-        public readonly array $data,
-        private readonly MetaInformation $meta,
-    ) {
+    private function __construct(int $created, array $data, MetaInformation $meta)
+    {
+        $this->created = $created;
+        $this->data = $data;
+        $this->meta = $meta;
     }
 
     /**
@@ -41,15 +56,13 @@ final class EditResponse implements ResponseContract, ResponseHasMetaInformation
      */
     public static function from(array $attributes, MetaInformation $meta): self
     {
-        $results = array_map(fn (array $result): EditResponseData => EditResponseData::from(
-            $result
-        ), $attributes['data']);
+        $results = array_map(function (array $result) : EditResponseData {
+            return EditResponseData::from(
+                $result
+            );
+        }, $attributes['data']);
 
-        return new self(
-            $attributes['created'],
-            $results,
-            $meta,
-        );
+        return new self($attributes['created'], $results, $meta);
     }
 
     /**
@@ -59,10 +72,9 @@ final class EditResponse implements ResponseContract, ResponseHasMetaInformation
     {
         return [
             'created' => $this->created,
-            'data' => array_map(
-                static fn (EditResponseData $result): array => $result->toArray(),
-                $this->data,
-            ),
+            'data' => array_map(static function (EditResponseData $result) : array {
+                return $result->toArray();
+            }, $this->data),
         ];
     }
 }

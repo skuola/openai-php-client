@@ -2,9 +2,9 @@
 
 namespace OpenAI\Enums\FineTuning;
 
-enum FineTuningEventLevel: string
+class FineTuningEventLevel
 {
-    case Info = 'info';
-    case Warning = 'warn';
-    case Error = 'error';
+    public const Info = 'info';
+    public const Warning = 'warn';
+    public const Error = 'error';
 }

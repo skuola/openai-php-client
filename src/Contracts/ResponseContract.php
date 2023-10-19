@@ -23,30 +23,32 @@ interface ResponseContract extends ArrayAccess
     public function toArray(): array;
 
     /**
-     * @param  key-of<TArray>  $offset
+     * @param mixed $offset
      */
-    public function offsetExists(mixed $offset): bool;
+    public function offsetExists($offset): bool;
 
     /**
      * @template TOffsetKey of key-of<TArray>
      *
-     * @param  TOffsetKey  $offset
+     * @param mixed $offset
      * @return TArray[TOffsetKey]
      */
-    public function offsetGet(mixed $offset): mixed;
+    public function offsetGet($offset);
 
     /**
      * @template TOffsetKey of key-of<TArray>
      *
-     * @param  TOffsetKey  $offset
-     * @param  TArray[TOffsetKey] $value
+     * @param mixed $offset
+     * @param mixed $value
+     * @return never
      */
-    public function offsetSet(mixed $offset, mixed $value): never;
+    public function offsetSet($offset, $value);
 
     /**
      * @template TOffsetKey of key-of<TArray>
      *
-     * @param  TOffsetKey  $offset
+     * @param mixed $offset
+     * @return never
      */
-    public function offsetUnset(mixed $offset): never;
+    public function offsetUnset($offset);
 }

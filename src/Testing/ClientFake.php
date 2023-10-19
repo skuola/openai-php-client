@@ -23,15 +23,20 @@ use Throwable;
 class ClientFake implements ClientContract
 {
     /**
+     * @var array<array-key, (ResponseContract | StreamResponse | string)>
+     */
+    protected $responses = [];
+    /**
      * @var array<array-key, TestRequest>
      */
-    private array $requests = [];
+    private $requests = [];
 
     /**
      * @param  array<array-key, ResponseContract|StreamResponse|string>  $responses
      */
-    public function __construct(protected array $responses = [])
+    public function __construct(array $responses = [])
     {
+        $this->responses = $responses;
     }
 
     /**
@@ -39,10 +44,13 @@ class ClientFake implements ClientContract
      */
     public function addResponses(array $responses): void
     {
-        $this->responses = [...$this->responses, ...$responses];
+        $this->responses = array_merge($this->responses, $responses);
     }
 
-    public function assertSent(string $resource, callable|int $callback = null): void
+    /**
+     * @param callable|int $callback
+     */
+    public function assertSent(string $resource, $callback = null): void
     {
         if (is_int($callback)) {
             $this->assertSentTimes($resource, $callback);
@@ -75,9 +83,13 @@ class ClientFake implements ClientContract
             return [];
         }
 
-        $callback = $callback ?: fn (): bool => true;
+        $callback = $callback ?: function () : bool {
+            return true;
+        };
 
-        return array_filter($this->resourcesOf($resource), fn (TestRequest $resource) => $callback($resource->method(), $resource->parameters()));
+        return array_filter($this->resourcesOf($resource), function (TestRequest $resource) use ($callback) {
+            return $callback($resource->method(), $resource->parameters());
+        });
     }
 
     private function hasSent(string $resource): bool
@@ -96,8 +108,10 @@ class ClientFake implements ClientContract
     public function assertNothingSent(): void
     {
         $resourceNames = implode(
-            separator: ', ',
-            array: array_map(fn (TestRequest $request): string => $request->resource(), $this->requests)
+            ', ',
+            array_map(function (TestRequest $request) : string {
+                return $request->resource();
+            }, $this->requests)
         );
 
         PHPUnit::assertEmpty($this->requests, 'The following requests were sent unexpectedly: '.$resourceNames);
@@ -108,10 +122,15 @@ class ClientFake implements ClientContract
      */
     private function resourcesOf(string $type): array
     {
-        return array_filter($this->requests, fn (TestRequest $request): bool => $request->resource() === $type);
+        return array_filter($this->requests, function (TestRequest $request) use ($type) : bool {
+            return $request->resource() === $type;
+        });
     }
 
-    public function record(TestRequest $request): ResponseContract|StreamResponse|string
+    /**
+     * @return \OpenAI\Contracts\ResponseContract|\OpenAI\Responses\StreamResponse|string
+     */
+    public function record(TestRequest $request)
     {
         $this->requests[] = $request;
 
@@ -128,57 +147,57 @@ class ClientFake implements ClientContract
         return $response;
     }
 
-    public function completions(): CompletionsTestResource
+    public function completions(): \OpenAI\Contracts\Resources\CompletionsContract
     {
         return new CompletionsTestResource($this);
     }
 
-    public function chat(): ChatTestResource
+    public function chat(): \OpenAI\Contracts\Resources\ChatContract
     {
         return new ChatTestResource($this);
     }
 
-    public function embeddings(): EmbeddingsTestResource
+    public function embeddings(): \OpenAI\Contracts\Resources\EmbeddingsContract
     {
         return new EmbeddingsTestResource($this);
     }
 
-    public function audio(): AudioTestResource
+    public function audio(): \OpenAI\Contracts\Resources\AudioContract
     {
         return new AudioTestResource($this);
     }
 
-    public function edits(): EditsTestResource
+    public function edits(): \OpenAI\Contracts\Resources\EditsContract
     {
         return new EditsTestResource($this);
     }
 
-    public function files(): FilesTestResource
+    public function files(): \OpenAI\Contracts\Resources\FilesContract
     {
         return new FilesTestResource($this);
     }
 
-    public function models(): ModelsTestResource
+    public function models(): \OpenAI\Contracts\Resources\ModelsContract
     {
         return new ModelsTestResource($this);
     }
 
-    public function fineTunes(): FineTunesTestResource
+    public function fineTunes(): \OpenAI\Contracts\Resources\FineTunesContract
     {
         return new FineTunesTestResource($this);
     }
 
-    public function fineTuning(): FineTuningTestResource
+    public function fineTuning(): \OpenAI\Contracts\Resources\FineTuningContract
     {
         return new FineTuningTestResource($this);
     }
 
-    public function moderations(): ModerationsTestResource
+    public function moderations(): \OpenAI\Contracts\Resources\ModerationsContract
     {
         return new ModerationsTestResource($this);
     }
 
-    public function images(): ImagesTestResource
+    public function images(): \OpenAI\Contracts\Resources\ImagesContract
     {
         return new ImagesTestResource($this);
     }

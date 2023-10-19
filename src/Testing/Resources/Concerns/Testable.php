@@ -17,18 +17,25 @@ trait Testable
 
     /**
      * @param  array<string, mixed>|string  $parameters
+     * @return \OpenAI\Contracts\ResponseContract|\OpenAI\Responses\StreamResponse|string
      */
-    protected function record(string $method, array|string $parameters = null): ResponseContract|StreamResponse|string
+    protected function record(string $method, $parameters = null)
     {
         return $this->fake->record(new TestRequest($this->resource(), $method, $parameters));
     }
 
-    public function assertSent(callable|int $callback = null): void
+    /**
+     * @param callable|int $callback
+     */
+    public function assertSent($callback = null): void
     {
         $this->fake->assertSent($this->resource(), $callback);
     }
 
-    public function assertNotSent(callable|int $callback = null): void
+    /**
+     * @param callable|int $callback
+     */
+    public function assertNotSent($callback = null): void
     {
         $this->fake->assertNotSent($this->resource(), $callback);
     }

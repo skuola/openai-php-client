@@ -10,11 +10,11 @@ final class RetrieveResponseFixture
         'id' => 'ft-AF1WoRqd3aJAHsqc9NY7iL8F',
         'object' => 'fine-tune',
         'model' => 'curie',
-        'created_at' => 1_614_807_352,
+        'created_at' => 1614807352,
         'events' => [
             [
                 'object' => 'fine-tune-event',
-                'created_at' => 1_614_807_352,
+                'created_at' => 1614807352,
                 'level' => 'info',
                 'message' => 'Job enqueued. Waiting for jobs ahead to complete. Queue number =>  0.',
             ],
@@ -37,6 +37,6 @@ final class RetrieveResponseFixture
         'training_files' => [
             CreateResponseFixture::ATTRIBUTES,
         ],
-        'updated_at' => 1_614_807_865,
+        'updated_at' => 1614807865,
     ];
 }

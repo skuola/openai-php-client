@@ -9,12 +9,18 @@ use Exception;
 final class ErrorException extends Exception
 {
     /**
+     * @var array{message: (string | array<int, string>), type: ?string, code: (string | int | null)}
+     * @readonly
+     */
+    private $contents;
+    /**
      * Creates a new Exception instance.
      *
      * @param  array{message: string|array<int, string>, type: ?string, code: string|int|null}  $contents
      */
-    public function __construct(private readonly array $contents)
+    public function __construct(array $contents)
     {
+        $this->contents = $contents;
         $message = ($contents['message'] ?: (string) $this->contents['code']) ?: 'Unknown error';
 
         if (is_array($message)) {
@@ -42,8 +48,9 @@ final class ErrorException extends Exception
 
     /**
      * Returns the error code.
+     * @return string|int|null
      */
-    public function getErrorCode(): string|int|null
+    public function getErrorCode()
     {
         return $this->contents['code'];
     }
